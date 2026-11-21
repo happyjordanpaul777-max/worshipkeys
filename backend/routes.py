@@ -18,7 +18,7 @@ class AuthInput(BaseModel):
 class SongInput(BaseModel):
     title: str = Field(min_length=1, max_length=200)
     song_key: str = Field(default="", max_length=20)
-    transpose: int = Field(default=0, ge=-12, le=12)
+    transpose: int = Field(default=0)
     tempo_feel: str = Field(default="Medium", max_length=40)
     bpm: int | None = Field(default=None, ge=30, le=300)
     beat: str = Field(default="", max_length=20)
