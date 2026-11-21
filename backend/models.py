@@ -42,7 +42,7 @@ class Song(Base):
 class Idea(Base):
     __tablename__ = "worshipkeys_ideas"
     id: Mapped[int] = mapped_column(primary_key=True)
-    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("worshipkeys_users.id", ondelete="CASCADE"), index=True)
     content: Mapped[str] = mapped_column(Text)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now)
     user: Mapped[User] = relationship()
@@ -51,7 +51,7 @@ class IdeaComment(Base):
     __tablename__ = "worshipkeys_idea_comments"
     id: Mapped[int] = mapped_column(primary_key=True)
     idea_id: Mapped[int] = mapped_column(ForeignKey("worshipkeys_ideas.id", ondelete="CASCADE"), index=True)
-    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("worshipkeys_users.id", ondelete="CASCADE"), index=True)
     content: Mapped[str] = mapped_column(Text)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now)
     user: Mapped[User] = relationship()
@@ -60,6 +60,6 @@ class IdeaLike(Base):
     __tablename__ = "worshipkeys_idea_likes"
     __table_args__ = (UniqueConstraint("idea_id", "user_id", name="uq_idea_like_user"),)
     id: Mapped[int] = mapped_column(primary_key=True)
-    idea_id: Mapped[int] = mapped_column(ForeignKey("ideas.id", ondelete="CASCADE"), index=True)
-    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    idea_id: Mapped[int] = mapped_column(ForeignKey("worshipkeys_ideas.id", ondelete="CASCADE"), index=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("worshipkeys_users.id", ondelete="CASCADE"), index=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now)
