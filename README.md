@@ -1,39 +1,36 @@
-# WorshipKeys — Local Shared Songbook
+# WorshipKeys — Local Songbook
 
-WorshipKeys runs locally on each Windows laptop at **http://127.0.0.1:8000**. Both laptop copies connect directly to the same PostgreSQL database in the cloud, so songs, lyrics, chords and keyboard settings are shared over the internet.
+WorshipKeys runs locally on each Windows laptop at **http://127.0.0.1:8000**. Songs are stored in a local SQLite database file named `worshipkeys.db`.
 
-## How synchronization works
+## Move your songbook to another laptop
 
-- The app runs locally on each laptop; it is not a public website.
-- The cloud PostgreSQL database stores the shared songbook.
-- The laptops do not need the same Wi-Fi network.
-- Both laptops need internet access to see the latest saved songs.
-- The local no-login editing API accepts requests only from the same laptop. The public Render app keeps its normal account protection.
+1. Open WorshipKeys on the laptop containing your songs.
+2. Click **Export songbook**. It downloads one `.worshipkeys` backup file containing all song lyrics, chords, keys, transpose settings, tempo, BPM, beat, accompaniment style, categories and notes.
+3. Send that file to the other laptop using WhatsApp.
+4. On the receiving laptop, open WorshipKeys and click **Import backup**.
+5. Select the `.worshipkeys` file and confirm.
 
-## First laptop setup
+**Import replaces the receiving laptop's current song list.** Export a backup first if you want to preserve songs already on that laptop.
+
+## Setup
 
 1. Install Python 3.11 or newer from https://www.python.org/downloads/ (Python 3.14.7 is fine).
-2. Download this repository ZIP and extract it into a normal folder.
-3. Open the Render dashboard for the `worshipkeys-db` PostgreSQL database.
-4. Open **Connect** and copy the **External Database URL**. Keep it private; it contains database credentials.
-5. Double-click `run_worshipkeys.bat`. On first launch, it creates `.env` and opens it in Notepad.
-6. Replace the DATABASE_URL placeholder with the External Database URL. Leave `LOCAL_SHARED_MODE=true`.
-7. Save the file and close Notepad.
-8. Double-click `run_worshipkeys.bat` again. WorshipKeys opens at http://127.0.0.1:8000.
+2. Download this repository ZIP and extract it.
+3. Double-click `run_worshipkeys.bat`.
+4. WorshipKeys opens at http://127.0.0.1:8000.
 
-## Second laptop
+The first launch installs the required Python packages. After that, songs are stored locally and the app works without internet.
 
-Repeat steps 1–8 on the second laptop. Use the exact same External Database URL and keep `LOCAL_SHARED_MODE=true`. The songs will appear on both laptops.
+## Add songs
 
-## Adding songs
-
-- Click **Add song** to enter the title, lyrics, chords, key, tempo, BPM, beat, accompaniment style and notes.
-- Click **Import .txt songs** to import one or more plain-text lyric files. Each filename becomes the song title; you can edit the song details afterward.
-- Saved changes are stored in the shared database. The song list refreshes automatically every 20 seconds; use Refresh to check immediately.
+- Click **Add song** to enter title, lyrics, chords, key, tempo, BPM, beat, accompaniment style and notes.
+- Click **Import .txt** to import plain-text lyric files. Each filename becomes the song title.
+- Click **Export songbook** regularly to make a portable backup.
 
 ## Important
 
-- Never share or upload `.env`; it contains the database password.
-- Keep the command window open while using WorshipKeys. Press Ctrl+C in that window to stop it.
-- The laptops need internet access for synchronization. Offline editing and later sync are not supported.
-- The current Render free PostgreSQL database is temporary and is scheduled to expire on **December 21, 2026**. Move to a persistent database before then or the shared songs may be lost.
+- Each laptop has its own independent songbook. Changes do not sync automatically.
+- Use Export on the first laptop and Import on the second whenever you want to transfer the latest collection.
+- Import replaces the receiving laptop's current song list.
+- Keep the `worshipkeys.db` file safe; it contains the local song collection.
+- The local server listens only on your own laptop (127.0.0.1).
