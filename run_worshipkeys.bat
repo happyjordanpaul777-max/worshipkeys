@@ -13,17 +13,13 @@ if errorlevel 1 (
 
 if not exist ".env" (
   copy ".env.example" ".env" >nul
-  echo.
-  echo First-time setup: a private .env file has been created.
-  echo Open .env in Notepad and replace the DATABASE_URL placeholder
-  echo with the EXTERNAL PostgreSQL URL from Render > Database > Connect.
-  echo LOCAL_SHARED_MODE should remain true.
-  echo Do not share .env or upload it to GitHub.
-  echo.
-  start notepad ".env"
-  pause
-  exit /b 0
 )
+
+echo.
+echo WorshipKeys stores songs locally in worshipkeys.db.
+echo No Render database, Google Drive, account, or internet is required after setup.
+echo Export a .worshipkeys backup and send it through WhatsApp to move songs to another laptop.
+echo.
 
 if not exist ".venv\Scripts\python.exe" (
   echo Creating the local Python environment...
