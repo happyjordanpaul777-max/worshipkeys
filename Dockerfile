@@ -1,10 +1,14 @@
+FROM python:3.12-slim
 
-FROM nginx:alpine
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PORT=10000
 
-RUN rm -f /usr/share/nginx/html/index.html
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+COPY backend ./backend
+COPY index.html ./index.html
 
-COPY index.html /usr/share/nginx/html/index.html
-
-EXPOSE 80
-
-CMD ["nginx", "-g", "daemon off;"]
+EXPOSE 10000
+CMD ["sh", "-c", "uvicorn backend.main:app --host 0.0.0.0 --port ${PORT:-10000}"]
