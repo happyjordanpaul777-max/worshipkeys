@@ -165,3 +165,50 @@ def toggle_like(idea_id: int, db: Session = Depends(get_db), user: User = Depend
     except IntegrityError:
         db.rollback()
     return {"liked": True}
+
+# Private local-laptop songbook API. This is deliberately disabled on Render
+# unless LOCAL_SHARED_MODE=true, and additionally accepts loopback clients only.
+import ipaddress
+from .models import Song
+
+def local_laptop_only(request: Request):
+    if not settings.local_shared_mode:
+        raise HTTPException(status_code=404, detail="Not found")
+    host = request.client.host if request.client else ""
+    try:
+        if not ipaddress.ip_address(host).is_loopback:
+            raise HTTPException(status_code=403, detail="Local laptop access only")
+    except ValueError:
+        raise HTTPException(status_code=403, detail="Local laptop access only")
+
+@router.get("/api/local/songs")
+def local_list_songs(_=Depends(local_laptop_only), db: Session = Depends(get_db)):
+    return [song_payload(s) for s in db.query(Song).order_by(Song.title.asc()).all()]
+
+@router.post("/api/local/songs", status_code=201)
+def local_create_song(data: SongInput, _=Depends(local_laptop_only), db: Session = Depends(get_db)):
+    song = Song(**data.model_dump())
+    db.add(song)
+    db.commit()
+    db.refresh(song)
+    return song_payload(song)
+
+@router.put("/api/local/songs/{song_id}")
+def local_update_song(song_id: int, data: SongInput, _=Depends(local_laptop_only), db: Session = Depends(get_db)):
+    song = db.get(Song, song_id)
+    if not song:
+        raise HTTPException(404, "Song not found.")
+    for key, value in data.model_dump().items():
+        setattr(song, key, value)
+    db.commit()
+    db.refresh(song)
+    return song_payload(song)
+
+@router.delete("/api/local/songs/{song_id}")
+def local_delete_song(song_id: int, _=Depends(local_laptop_only), db: Session = Depends(get_db)):
+    song = db.get(Song, song_id)
+    if not song:
+        raise HTTPException(404, "Song not found.")
+    db.delete(song)
+    db.commit()
+    return {"ok": True}
