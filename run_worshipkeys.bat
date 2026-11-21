@@ -1,7 +1,7 @@
 @echo off
 setlocal
 cd /d "%~dp0"
-title WorshipKeys Local App
+title WorshipKeys Local Songbook
 
 where py >nul 2>nul
 if errorlevel 1 (
@@ -15,9 +15,10 @@ if not exist ".env" (
   copy ".env.example" ".env" >nul
   echo.
   echo First-time setup: a private .env file has been created.
-  echo Open .env in Notepad and fill in DATABASE_URL and ADMIN_PASSWORD.
-  echo Get the EXTERNAL database URL from your Render database dashboard - Connect.
-  echo Do not send the URL or password to anyone or commit .env to GitHub.
+  echo Open .env in Notepad and replace the DATABASE_URL placeholder
+  echo with the EXTERNAL PostgreSQL URL from Render > Database > Connect.
+  echo LOCAL_SHARED_MODE should remain true.
+  echo Do not share .env or upload it to GitHub.
   echo.
   start notepad ".env"
   pause
