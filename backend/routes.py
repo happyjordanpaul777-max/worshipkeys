@@ -212,3 +212,25 @@ def local_delete_song(song_id: int, _=Depends(local_laptop_only), db: Session = 
     db.delete(song)
     db.commit()
     return {"ok": True}
+
+# Portable songbook backup: export one file and send it to the other laptop.
+class SongbookImport(BaseModel):
+    version: int = Field(default=1, ge=1, le=1)
+    songs: list[SongInput] = Field(max_length=5000)
+
+@router.get("/api/local/songbook/export")
+def export_local_songbook(_=Depends(local_laptop_only), db: Session = Depends(get_db)):
+    return {
+        "format": "WorshipKeys",
+        "version": 1,
+        "exported_at": datetime.now(timezone.utc).isoformat(),
+        "songs": [song_payload(s) for s in db.query(Song).order_by(Song.title.asc()).all()],
+    }
+
+@router.post("/api/local/songbook/import")
+def import_local_songbook(data: SongbookImport, _=Depends(local_laptop_only), db: Session = Depends(get_db)):
+    # Import replaces the receiving laptop's current song list.
+    db.query(Song).delete(synchronize_session=False)
+    db.add_all([Song(**song.model_dump()) for song in data.songs])
+    db.commit()
+    return {"ok": True, "imported": len(data.songs)}
