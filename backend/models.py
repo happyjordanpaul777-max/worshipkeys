@@ -7,7 +7,7 @@ def now():
     return datetime.now(timezone.utc)
 
 class User(Base):
-    __tablename__ = "users"
+    __tablename__ = "worshipkeys_users"
     id: Mapped[int] = mapped_column(primary_key=True)
     email: Mapped[str] = mapped_column(String(254), unique=True, index=True)
     password_hash: Mapped[str] = mapped_column(String(255))
@@ -15,16 +15,16 @@ class User(Base):
     sessions: Mapped[list["UserSession"]] = relationship(back_populates="user", cascade="all, delete-orphan")
 
 class UserSession(Base):
-    __tablename__ = "user_sessions"
+    __tablename__ = "worshipkeys_user_sessions"
     id: Mapped[int] = mapped_column(primary_key=True)
-    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("worshipkeys_users.id", ondelete="CASCADE"), index=True)
     token_hash: Mapped[str] = mapped_column(String(64), unique=True, index=True)
     expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), index=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now)
     user: Mapped[User] = relationship(back_populates="sessions")
 
 class Song(Base):
-    __tablename__ = "songs"
+    __tablename__ = "worshipkeys_songs"
     id: Mapped[int] = mapped_column(primary_key=True)
     title: Mapped[str] = mapped_column(String(200), index=True)
     song_key: Mapped[str] = mapped_column(String(20), default="")
@@ -40,7 +40,7 @@ class Song(Base):
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now, onupdate=now)
 
 class Idea(Base):
-    __tablename__ = "ideas"
+    __tablename__ = "worshipkeys_ideas"
     id: Mapped[int] = mapped_column(primary_key=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
     content: Mapped[str] = mapped_column(Text)
@@ -48,16 +48,16 @@ class Idea(Base):
     user: Mapped[User] = relationship()
 
 class IdeaComment(Base):
-    __tablename__ = "idea_comments"
+    __tablename__ = "worshipkeys_idea_comments"
     id: Mapped[int] = mapped_column(primary_key=True)
-    idea_id: Mapped[int] = mapped_column(ForeignKey("ideas.id", ondelete="CASCADE"), index=True)
+    idea_id: Mapped[int] = mapped_column(ForeignKey("worshipkeys_ideas.id", ondelete="CASCADE"), index=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
     content: Mapped[str] = mapped_column(Text)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now)
     user: Mapped[User] = relationship()
 
 class IdeaLike(Base):
-    __tablename__ = "idea_likes"
+    __tablename__ = "worshipkeys_idea_likes"
     __table_args__ = (UniqueConstraint("idea_id", "user_id", name="uq_idea_like_user"),)
     id: Mapped[int] = mapped_column(primary_key=True)
     idea_id: Mapped[int] = mapped_column(ForeignKey("ideas.id", ondelete="CASCADE"), index=True)
