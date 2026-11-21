@@ -45,6 +45,8 @@ def song_payload(s: Song):
 @router.post("/api/auth/register", status_code=201)
 def register(data: AuthInput, response: Response, db: Session = Depends(get_db)):
     email = str(data.email).strip().lower()
+    if email == settings.admin_email:
+        raise HTTPException(403, "The administrator account is provisioned securely by the site owner. Please sign in.")
     if db.query(User).filter_by(email=email).first():
         raise HTTPException(409, "An account with this email already exists.")
     user = User(email=email, password_hash=hash_password(data.password))
